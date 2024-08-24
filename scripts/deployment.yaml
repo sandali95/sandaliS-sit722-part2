@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: books-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: books-app
+
+  template:
+    metadata:
+      labels:
+        app: books-app
+    spec:
+      containers: 
+      - name: books-app
+        image: books-application:1
+        imagePullPolicy: Never
+
+        env:
+        - name: PORT
+          value: "8000"
+        - name: DATABASE_URL
+          value: postgresql://booksdb_8rqj_user:3NqdcZylFItor8cWntOiEOH7WEHTM6j9@dpg-cr49d8rv2p9s73colrfg-a.oregon-postgres.render.com/booksdb_8rqj  
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: books-service
+spec:
+  selector:
+    app: books-app
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+      nodePort: 30000
